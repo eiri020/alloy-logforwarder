@@ -1,0 +1,106 @@
+loki.source.file "mosquitto" {
+  targets = [{
+    __path__ = "__SOURCE_PATH__",
+  }]
+  forward_to = [loki.process.mosquitto.receiver]
+}
+
+loki.process "mosquitto" {
+  stage.drop {
+    expression = ".*Saving in-memory database.*"
+  }
+
+  stage.regex {
+    expression = "^(?P<mosquitto_timestamp>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}): (?:(?P<level>[A-Za-z]+): )?(?P<message>.*)$"
+  }
+
+  stage.regex {
+    expression = `^\[[0-9]{2}:[0-9]{2}:[0-9]{2}\] (?P<level>[A-Z]+):\s+\x1b\[[0-9;]*m?(?P<message>.*)\x1b\[[0-9;]*m?$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `^New client connected from [^ ]+ as (?P<client_id>[^ ]+) .*$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `^Client (?P<client_id>[^ ]+) \[[^\]]+\] disconnected:.*$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `^Received PUBLISH from (?P<client_id>[^ ]+) \(d[0-9]+, q(?P<qos>[0-9]+), r[0-9]+, m[0-9]+, '(?P<topic>[^']+)'.*$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `^Sending PUBLISH to (?P<client_id>[^ ]+) \(d[0-9]+, q(?P<qos>[0-9]+), r[0-9]+, m[0-9]+, '(?P<topic>[^']+)'.*$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*client_id=(?P<client_id>[A-Za-z0-9_.:-]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*topic=(?P<topic>[A-Za-z0-9_/.-]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*qos=(?P<qos>[0-9]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*event_type=(?P<event_type>[A-Za-z0-9_.:-]+).*`
+  }
+
+  stage.template {
+    source   = "event_type"
+    template = `{{ if .Value }}{{ .Value }}{{ else if contains "New client connected" .message }}client_connected{{ else if contains "disconnected" .message }}client_disconnected{{ else if contains "Received PUBLISH" .message }}publish_received{{ else if contains "Sending PUBLISH" .message }}publish_sent{{ end }}`
+  }
+
+  stage.static_labels {
+    values = {
+      host        = "__HOST_LABEL__",
+      site        = "__SITE_LABEL__",
+      service     = "__SERVICE_LABEL__",
+      app         = "__APP_LABEL__",
+      source_type = "__SOURCE_TYPE_LABEL__",
+      environment = "__ENVIRONMENT_LABEL__",
+      stream      = "__STREAM_LABEL__",
+      severity    = "info",
+    }
+  }
+
+  stage.template {
+    source   = "level"
+    template = "{{ ToLower .Value }}"
+  }
+
+  stage.template {
+    source   = "level"
+    template = `{{ Replace .Value "warning" "warn" -1 }}`
+  }
+
+  stage.labels {
+    values = {
+      level      = "",
+      severity   = "level",
+      client_id  = "",
+      topic      = "",
+      qos        = "",
+      event_type = "",
+    }
+  }
+
+  stage.pack {
+    labels           = ["client_id", "topic", "qos", "event_type"]
+    ingest_timestamp = false
+  }
+
+  forward_to = [loki.write.default.receiver]
+}

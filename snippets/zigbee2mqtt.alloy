@@ -1,0 +1,87 @@
+loki.source.file "zigbee2mqtt" {
+  targets = [{
+    __path__ = "__SOURCE_PATH__",
+  }]
+  forward_to = [loki.process.zigbee2mqtt.receiver]
+}
+
+loki.process "zigbee2mqtt" {
+  stage.drop {
+    expression = ".*z2m:mqtt: MQTT publish:.*"
+  }
+
+  stage.regex {
+    expression = `^\[(?P<z2m_timestamp>[^\]]+)\]\s+\x1b\[[0-9;]*m?(?P<level>[A-Za-z]+)\x1b\[[0-9;]*m?:\s+\t?(?P<message>.*)$`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*Publish '(?P<payload_type>[^']+)' '(?P<topic>[^']+)' to '(?P<friendly_name>[^']+)'.*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*Publish '[^']+' '[^']+' to '(?P<device>[^']+)'.*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*(?:device|device_name)=(?P<device>[A-Za-z0-9_.:-]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*(?:friendly_name|friendlyName)=(?P<friendly_name>[A-Za-z0-9_.:-]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*topic=(?P<topic>[A-Za-z0-9_/.-]+).*`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `.*payload_type=(?P<payload_type>[A-Za-z0-9_.:-]+).*`
+  }
+
+  stage.static_labels {
+    values = {
+      host        = "__HOST_LABEL__",
+      site        = "__SITE_LABEL__",
+      service     = "__SERVICE_LABEL__",
+      app         = "__APP_LABEL__",
+      source_type = "__SOURCE_TYPE_LABEL__",
+      environment = "__ENVIRONMENT_LABEL__",
+      stream      = "__STREAM_LABEL__",
+      severity    = "info",
+    }
+  }
+
+  stage.template {
+    source   = "level"
+    template = "{{ ToLower .Value }}"
+  }
+
+  stage.template {
+    source   = "level"
+    template = `{{ Replace .Value "warning" "warn" -1 }}`
+  }
+
+  stage.labels {
+    values = {
+      level         = "",
+      severity      = "level",
+      topic         = "",
+      device        = "",
+      friendly_name = "",
+      payload_type  = "",
+    }
+  }
+
+  stage.pack {
+    labels           = ["topic", "device", "friendly_name", "payload_type"]
+    ingest_timestamp = false
+  }
+
+  forward_to = [loki.write.default.receiver]
+}

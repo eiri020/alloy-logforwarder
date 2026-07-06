@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "HA App: Check tools",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/check-tools.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Lint YAML",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lint-yaml.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Lint shell",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/lint-shell.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Build image",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/build.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Smoke test",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/smoke-test.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Deploy dry-run",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/deploy.sh",
+      "args": [
+        "--dry-run"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Deploy to Home Assistant",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/deploy.sh",
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Refresh local store",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/refresh-store.sh",
+      "problemMatcher": []
+    }
+  ]
+}

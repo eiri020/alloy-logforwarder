@@ -1,0 +1,184 @@
+---
+name: "Alloy Logforwarder"
+description: >-
+  Forward Home Assistant logs to the central Loki/Alloy logging stack.
+version: "0.1.0"
+slug: "alloy_logforwarder"
+init: false
+startup: services
+boot: manual
+hassio_api: true
+hassio_role: manager
+arch:
+  - aarch64
+  - amd64
+options:
+  loki_url: "http://192.168.64.50:3310/loki/api/v1/push"
+  log_level: "info"
+  source_path: "/config/home-assistant.log"
+  host_label: "javastraat"
+  site_label: "javastraat"
+  service_label: "homeassistant"
+  app_label: "homeassistant"
+  source_type_label: "ha-core"
+  environment_label: "prod"
+  stream_label: "events"
+  supervisor_core_logs_enabled: false
+  supervisor_core_logs_path: "/tmp/alloy-logforwarder/homeassistant-core.log"
+  supervisor_core_logs_poll_interval: 30
+  supervisor_log_sources:
+    - enabled: false
+      name: "homeassistant_core"
+      slug: "core"
+      endpoint: "core/logs"
+      path: "/tmp/alloy-logforwarder/homeassistant-core.log"
+      snippet: "/etc/alloy-logforwarder/snippets/homeassistant-core.alloy"
+      service: "homeassistant"
+      app: "homeassistant"
+      source_type: "ha-core"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "zigbee2mqtt"
+      slug: "45df7312_zigbee2mqtt"
+      endpoint: "addons/45df7312_zigbee2mqtt/logs"
+      path: "/tmp/alloy-logforwarder/addons/45df7312_zigbee2mqtt.log"
+      snippet: "/etc/alloy-logforwarder/snippets/zigbee2mqtt.alloy"
+      service: "zigbee2mqtt"
+      app: "zigbee2mqtt"
+      source_type: "zigbee2mqtt"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "mosquitto"
+      slug: "core_mosquitto"
+      endpoint: "addons/core_mosquitto/logs"
+      path: "/tmp/alloy-logforwarder/addons/core_mosquitto.log"
+      snippet: "/etc/alloy-logforwarder/snippets/mosquitto.alloy"
+      service: "mosquitto"
+      app: "mosquitto"
+      source_type: "mosquitto"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "supervisor"
+      slug: "supervisor"
+      endpoint: "supervisor/logs"
+      path: "/tmp/alloy-logforwarder/system/supervisor.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "supervisor"
+      app: "supervisor"
+      source_type: "supervisor"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "host"
+      slug: "host"
+      endpoint: "host/logs"
+      path: "/tmp/alloy-logforwarder/system/host.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "host"
+      app: "host"
+      source_type: "host"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "dns"
+      slug: "dns"
+      endpoint: "dns/logs"
+      path: "/tmp/alloy-logforwarder/system/dns.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "dns"
+      app: "dns"
+      source_type: "dns"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "audio"
+      slug: "audio"
+      endpoint: "audio/logs"
+      path: "/tmp/alloy-logforwarder/system/audio.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "audio"
+      app: "audio"
+      source_type: "audio"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "multicast"
+      slug: "multicast"
+      endpoint: "multicast/logs"
+      path: "/tmp/alloy-logforwarder/system/multicast.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "multicast"
+      app: "multicast"
+      source_type: "multicast"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "advanced_ssh"
+      slug: "a0d7b954_ssh"
+      endpoint: "addons/a0d7b954_ssh/logs"
+      path: "/tmp/alloy-logforwarder/addons/a0d7b954_ssh.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "advanced-ssh"
+      app: "advanced-ssh"
+      source_type: "advanced-ssh"
+      stream: "events"
+      poll_interval: 30
+    - enabled: false
+      name: "alloy_logforwarder"
+      slug: "local_alloy_logforwarder"
+      endpoint: "addons/local_alloy_logforwarder/logs"
+      path: "/tmp/alloy-logforwarder/addons/local_alloy_logforwarder.log"
+      snippet: "/etc/alloy-logforwarder/snippets/supervisor-generic.alloy"
+      service: "alloy-logforwarder"
+      app: "alloy-logforwarder"
+      source_type: "alloy-logforwarder"
+      stream: "events"
+      poll_interval: 30
+  custom_alloy_config_glob: "/config/alloy-logforwarder/*.alloy"
+  sources: []
+schema:
+  loki_url: str
+  log_level: list(trace|debug|info|warn|error)
+  source_path: str
+  host_label: str
+  site_label: str
+  service_label: str
+  app_label: str
+  source_type_label: str
+  environment_label: str
+  stream_label: str
+  supervisor_core_logs_enabled: bool
+  supervisor_core_logs_path: str
+  supervisor_core_logs_poll_interval: int
+  supervisor_log_sources:
+    - enabled: bool
+      name: str
+      slug: str
+      endpoint: "str?"
+      path: str
+      snippet: str
+      service: str
+      app: str
+      source_type: str
+      stream: str
+      poll_interval: "int?"
+  custom_alloy_config_glob: str
+  sources:
+    - preset: list(homeassistant|zigbee2mqtt|mosquitto|custom)
+      name: str
+      enabled: bool
+      path: str
+      service: str
+      app: str
+      source_type: str
+      stream: str
+map:
+  - type: homeassistant_config
+    read_only: true
+    path: /config
+  - type: all_addon_configs
+    read_only: true
+    path: /addon_configs

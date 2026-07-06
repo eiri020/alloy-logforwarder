@@ -1,0 +1,65 @@
+loki.source.file "homeassistant_core" {
+  targets = [{
+    __path__ = "__SOURCE_PATH__",
+  }]
+  forward_to = [loki.process.homeassistant_core.receiver]
+}
+
+loki.process "homeassistant_core" {
+  stage.regex {
+    expression = `^(?:\x1b\[[0-9;]*m)?(?P<ha_timestamp>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}) (?P<severity>[A-Z]+) (?P<message>.*)(?:\x1b\[[0-9;]*m)?$`
+  }
+
+  stage.template {
+    source   = "severity"
+    template = "{{ ToLower .Value }}"
+  }
+
+  stage.template {
+    source   = "severity"
+    template = `{{ Replace .Value "warning" "warn" -1 }}`
+  }
+
+  stage.regex {
+    source     = "message"
+    expression = `^\([^)]+\) \[(?P<component>[^\]]+)\] (?P<ha_message>.*)$`
+  }
+
+  stage.regex {
+    source     = "component"
+    expression = `^homeassistant\.components\.(?P<integration>[^.]+).*$`
+  }
+
+  stage.regex {
+    source     = "ha_message"
+    expression = `.*(?:entity_id|entity)=['"]?(?P<entity_id>[A-Za-z0-9_.]+).*`
+  }
+
+  stage.static_labels {
+    values = {
+      host        = "__HOST_LABEL__",
+      site        = "__SITE_LABEL__",
+      service     = "__SERVICE_LABEL__",
+      app         = "__APP_LABEL__",
+      source_type = "__SOURCE_TYPE_LABEL__",
+      environment = "__ENVIRONMENT_LABEL__",
+      stream      = "__STREAM_LABEL__",
+    }
+  }
+
+  stage.labels {
+    values = {
+      severity    = "",
+      component   = "",
+      integration = "",
+      entity_id   = "",
+    }
+  }
+
+  stage.pack {
+    labels           = ["component", "integration", "entity_id"]
+    ingest_timestamp = false
+  }
+
+  forward_to = [loki.write.default.receiver]
+}

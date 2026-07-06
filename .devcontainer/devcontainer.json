@@ -1,0 +1,28 @@
+{
+  "name": "HA App - Alloy Logforwarder",
+  "image": "mcr.microsoft.com/devcontainers/base:bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "username": "vscode"
+    }
+  },
+  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends curl jq rsync shellcheck yamllint",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "openai.chatgpt",
+        "redhat.vscode-yaml",
+        "timonwong.shellcheck"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "files.eol": "\n",
+        "yaml.validate": true
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}
