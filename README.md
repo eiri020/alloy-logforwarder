@@ -93,20 +93,35 @@ Build, smoke test and deploy require the minimal app skeleton (`Dockerfile`,
 `config.yaml`, `run.sh`). Until that skeleton exists, these scripts intentionally
 return a clear error.
 
-Deploy and store refresh do not have a built-in Home Assistant target. Set the
-target explicitly for your environment:
+Deploy and store refresh do not have a built-in Home Assistant target. Copy
+`.env.sample` to `.env` and adjust it for your environment:
 
 ```bash
-export HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/
-export HA_SSH_TARGET=root@homeassistant.local
+cp .env.sample .env
+```
 
-./scripts/deploy.sh --dry-run
-./scripts/deploy.sh
-./scripts/refresh-store.sh
+Example `.env`:
+
+```bash
+HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/
+HA_SSH_TARGET=root@homeassistant.local
+HA_APP_SLUG=local_alloy_logforwarder
+HA_UNMANAGED_ALLOY_CONTAINER=mon-03-05-ha-alloy
+```
+
+The deploy, refresh and rollback VS Code tasks automatically load `.env`
+through `scripts/load-env-and-run.sh`. The same wrapper can be used from a
+terminal:
+
+```bash
+./scripts/load-env-and-run.sh ./scripts/deploy.sh --dry-run
+./scripts/load-env-and-run.sh ./scripts/deploy.sh
+./scripts/load-env-and-run.sh ./scripts/refresh-store.sh
 ```
 
 `HA_DEPLOY_TARGET` must include the remote path. `HA_SSH_TARGET` is only the
-SSH host used by Home Assistant CLI commands such as store refresh.
+SSH host used by Home Assistant CLI commands such as store refresh. `.env` is
+ignored by Git; commit `.env.sample` only.
 
 Production status:
 
@@ -118,12 +133,8 @@ Production status:
 Production rollback:
 
 ```bash
-export HA_SSH_TARGET=root@homeassistant.local
-export HA_APP_SLUG=local_alloy_logforwarder
-export HA_UNMANAGED_ALLOY_CONTAINER=mon-03-05-ha-alloy
-
-./scripts/rollback-production.sh --dry-run
-./scripts/rollback-production.sh
+./scripts/load-env-and-run.sh ./scripts/rollback-production.sh --dry-run
+./scripts/load-env-and-run.sh ./scripts/rollback-production.sh
 ```
 
 The rollback stops the managed app and starts the unmanaged fallback container.
@@ -143,12 +154,12 @@ Last validated in the devcontainer on 2026-07-04:
 Last validated against Home Assistant on 2026-07-04:
 
 ```bash
-export HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/
-export HA_SSH_TARGET=root@homeassistant.local
+cp .env.sample .env
+# Edit .env for your Home Assistant OS host.
 
-./scripts/deploy.sh --dry-run
-./scripts/deploy.sh
-./scripts/refresh-store.sh
+./scripts/load-env-and-run.sh ./scripts/deploy.sh --dry-run
+./scripts/load-env-and-run.sh ./scripts/deploy.sh
+./scripts/load-env-and-run.sh ./scripts/refresh-store.sh
 ```
 
 Result: files are present under `/addons/alloy-logforwarder`, and Home

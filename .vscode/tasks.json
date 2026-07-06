@@ -34,8 +34,9 @@
     {
       "label": "HA App: Deploy dry-run",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/deploy.sh",
+      "command": "${workspaceFolder}/scripts/load-env-and-run.sh",
       "args": [
+        "${workspaceFolder}/scripts/deploy.sh",
         "--dry-run"
       ],
       "problemMatcher": []
@@ -43,13 +44,38 @@
     {
       "label": "HA App: Deploy to Home Assistant",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/deploy.sh",
+      "command": "${workspaceFolder}/scripts/load-env-and-run.sh",
+      "args": [
+        "${workspaceFolder}/scripts/deploy.sh"
+      ],
       "problemMatcher": []
     },
     {
       "label": "HA App: Refresh local store",
       "type": "shell",
-      "command": "${workspaceFolder}/scripts/refresh-store.sh",
+      "command": "${workspaceFolder}/scripts/load-env-and-run.sh",
+      "args": [
+        "${workspaceFolder}/scripts/refresh-store.sh"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Production rollback dry-run",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/load-env-and-run.sh",
+      "args": [
+        "${workspaceFolder}/scripts/rollback-production.sh",
+        "--dry-run"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "HA App: Production rollback",
+      "type": "shell",
+      "command": "${workspaceFolder}/scripts/load-env-and-run.sh",
+      "args": [
+        "${workspaceFolder}/scripts/rollback-production.sh"
+      ],
       "problemMatcher": []
     }
   ]
