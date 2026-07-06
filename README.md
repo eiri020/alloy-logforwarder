@@ -13,6 +13,15 @@ For HAOS/Supervised, the Supervisor API route is the preferred route for Home
 Assistant Core logs. `home-assistant.log` is no longer used as the reliable
 source there.
 
+## Tested Platforms
+
+This app has only been tested with Home Assistant OS (HAOS).
+
+Other Home Assistant installation types, including Supervised, Container and
+Core, have not been validated yet. The runtime depends on Home Assistant
+Supervisor APIs and add-on behavior, so support outside HAOS should be treated
+as experimental until explicitly tested.
+
 ## Names
 
 | Item | Value |
