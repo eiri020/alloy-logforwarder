@@ -4,6 +4,7 @@ description: >-
   Forward Home Assistant logs to the central Loki/Alloy logging stack.
 version: "0.1.0"
 slug: "alloy_logforwarder"
+url: "https://github.com/eiri020/alloy-logforwarder/blob/main/DOCS.md"
 init: false
 startup: services
 boot: manual
@@ -13,7 +14,7 @@ arch:
   - aarch64
   - amd64
 options:
-  loki_url: "http://192.168.64.50:3310/loki/api/v1/push"
+  loki_url: "http://loki.example.local:3100/loki/api/v1/push"
   log_level: "info"
   source_path: "/config/home-assistant.log"
   host_label: "javastraat"
