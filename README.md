@@ -1,118 +1,116 @@
 # Alloy Logforwarder
 
-Home Assistant app voor het forwarden van Home Assistant logs naar de centrale
-Loki/Alloy loggingstack.
+Home Assistant app for forwarding Home Assistant logs to the central
+Loki/Alloy logging stack.
 
 ## Status
 
-Status: functionele runtime aanwezig. De app kan Home Assistant Core logs via
-de Supervisor API lezen en configureerbare HA app/add-on logbronnen via losse
-`.alloy` snippets forwarden naar Loki.
+Status: functional runtime is available. The app can read Home Assistant Core
+logs through the Supervisor API and forward configurable HA app/add-on log
+sources to Loki through separate `.alloy` snippets.
 
-Voor HAOS/Supervised is de Supervisor API-route de voorkeursroute voor Home
-Assistant Core logs. `home-assistant.log` wordt daar niet langer als
-betrouwbare bron gebruikt.
+For HAOS/Supervised, the Supervisor API route is the preferred route for Home
+Assistant Core logs. `home-assistant.log` is no longer used as the reliable
+source there.
 
-## Namen
+## Names
 
-| Onderdeel | Waarde |
+| Item | Value |
 |---|---|
-| Projectdirectory | repository root |
-| Deploy-directory | `/addons/alloy-logforwarder` |
+| Project directory | repository root |
+| Deploy directory | `/addons/alloy-logforwarder` |
 | Home Assistant slug | `alloy_logforwarder` |
-| Oorspronkelijk projectdocument | `homelab/docs/homeassistant/projects/alloy-logforwarder.md` |
+| Original project document | `homelab/docs/homeassistant/projects/alloy-logforwarder.md` |
 
 ## Development
 
-Open deze repository in VS Code:
+Open this repository in VS Code:
 
 ```bash
 code alloy-logforwarder
 ```
 
-Kies daarna `Dev Containers: Reopen in Container`.
+Then choose `Dev Containers: Reopen in Container`.
 
-De devcontainer is op 2026-07-04 succesvol headless gebouwd en gestart via de
-Dev Containers spec CLI. De remote workspace was:
+The devcontainer was successfully built and started headless on 2026-07-04
+using the Dev Containers spec CLI. The remote workspace was:
 
 ```text
 /workspaces/alloy-logforwarder
 ```
 
-Lokale vereisten:
+Local requirements:
 
-| Vereiste | Doel |
+| Requirement | Purpose |
 |---|---|
-| VS Code met Dev Containers extension | App-map openen in container |
-| Docker Desktop of Docker Engine | Devcontainer en app-builds draaien |
-| Git | Broncode beheren |
-| SSH naar `root@192.168.64.10` | Deploy naar `/addons/alloy-logforwarder` en store refresh |
+| VS Code with Dev Containers extension | Open the app repository in a container |
+| Docker Desktop or Docker Engine | Run devcontainers and app builds |
+| Git | Source control |
+| SSH to `root@192.168.64.10` | Deploy to `/addons/alloy-logforwarder` and refresh the store |
 
-De devcontainer installeert de basistooling voor Home Assistant app
-development:
+The devcontainer installs the base tooling for Home Assistant app development:
 
-| Tool | Doel |
+| Tool | Purpose |
 |---|---|
-| Docker CLI | App image lokaal bouwen via de host Docker daemon |
-| `shellcheck` | Shellscripts valideren |
-| `yamllint` | Home Assistant YAML/config valideren |
-| `jq` | JSON opties en API responses inspecteren |
-| `python3` met `yaml` module | App metadata uit `config.yaml` lezen |
-| `rsync` | Deploy naar `/addons/alloy-logforwarder` voorbereiden |
+| Docker CLI | Build the app image locally through the host Docker daemon |
+| `shellcheck` | Validate shell scripts |
+| `yamllint` | Validate Home Assistant YAML/config |
+| `jq` | Inspect JSON options and API responses |
+| `python3` with `yaml` module | Read app metadata from `config.yaml` |
+| `rsync` | Prepare deploys to `/addons/alloy-logforwarder` |
 
-De devcontainer installeert ook de VS Code extension `openai.chatgpt`, zodat
-Codex/OpenAI ondersteuning beschikbaar is binnen de container.
+The devcontainer also installs the VS Code extension `openai.chatgpt`, so
+Codex/OpenAI assistance is available inside the container.
 
-## Run Taken
+## Run Tasks
 
-De app-map bevat VS Code tasks in `.vscode/tasks.json` en bijbehorende scripts
-onder `scripts/`.
+The repository contains VS Code tasks in `.vscode/tasks.json` and matching
+scripts under `scripts/`.
 
-| Task | Script | Doel |
+| Task | Script | Purpose |
 |---|---|---|
-| `HA App: Check tools` | `scripts/check-tools.sh` | Controleert lokale/devcontainer tooling |
-| `HA App: Lint YAML` | `scripts/lint-yaml.sh` | Valideert YAML-bestanden |
-| `HA App: Lint shell` | `scripts/lint-shell.sh` | Valideert shellscripts met ShellCheck |
-| `HA App: Build image` | `scripts/build.sh` | Bouwt `alloy-logforwarder:dev` |
-| `HA App: Smoke test` | `scripts/smoke-test.sh` | Start de lokale image kort voor een smoke test |
-| `HA App: Deploy dry-run` | `scripts/deploy.sh --dry-run` | Toont rsync-wijzigingen naar Home Assistant |
-| `HA App: Deploy to Home Assistant` | `scripts/deploy.sh` | Deployed naar `/addons/alloy-logforwarder` |
-| `HA App: Refresh local store` | `scripts/refresh-store.sh` | Herlaadt de Home Assistant app store en controleert lokale zichtbaarheid |
-| Productie rollback dry-run | `scripts/rollback-production.sh --dry-run` | Toont rollbackacties zonder productie te wijzigen |
-| Productie rollback | `scripts/rollback-production.sh` | Stopt managed app en start unmanaged Alloy fallbackcontainer |
+| `HA App: Check tools` | `scripts/check-tools.sh` | Checks local/devcontainer tooling |
+| `HA App: Lint YAML` | `scripts/lint-yaml.sh` | Validates YAML files |
+| `HA App: Lint shell` | `scripts/lint-shell.sh` | Validates shell scripts with ShellCheck |
+| `HA App: Build image` | `scripts/build.sh` | Builds `alloy-logforwarder:dev` |
+| `HA App: Smoke test` | `scripts/smoke-test.sh` | Starts the local image briefly for a smoke test |
+| `HA App: Deploy dry-run` | `scripts/deploy.sh --dry-run` | Shows rsync changes to Home Assistant |
+| `HA App: Deploy to Home Assistant` | `scripts/deploy.sh` | Deploys to `/addons/alloy-logforwarder` |
+| `HA App: Refresh local store` | `scripts/refresh-store.sh` | Reloads the Home Assistant app store and checks local visibility |
+| Production rollback dry-run | `scripts/rollback-production.sh --dry-run` | Shows rollback actions without changing production |
+| Production rollback | `scripts/rollback-production.sh` | Stops the managed app and starts the unmanaged Alloy fallback container |
 
-Build, smoke test en deploy vereisen de minimale app skeleton
-(`Dockerfile`, `config.yaml`, `run.sh`). Tot die skeleton bestaat geven deze
-scripts bewust een duidelijke foutmelding.
+Build, smoke test and deploy require the minimal app skeleton (`Dockerfile`,
+`config.yaml`, `run.sh`). Until that skeleton exists, these scripts intentionally
+return a clear error.
 
-De standaard deploy-target gebruikt het Home Assistant IP-adres:
+The default deploy target uses the Home Assistant IP address:
 
 ```text
 root@192.168.64.10:/addons/alloy-logforwarder/
 ```
 
-Gebruik `HA_DEPLOY_TARGET` om dit tijdelijk te overschrijven.
-Gebruik `HA_SSH_TARGET` om de SSH-host voor store refresh tijdelijk te
-overschrijven.
+Use `HA_DEPLOY_TARGET` to override this temporarily. Use `HA_SSH_TARGET` to
+temporarily override the SSH host used for store refresh.
 
-Productiestatus:
+Production status:
 
-- de app draait op Javastraat als `local_alloy_logforwarder`;
-- de unmanaged container `mon-03-05-ha-alloy` blijft actief als fallback;
-- de eerste productiebronnen zijn `ha-core`, `zigbee2mqtt`, `mosquitto` en
+- the app runs on Javastraat as `local_alloy_logforwarder`;
+- the unmanaged container `mon-03-05-ha-alloy` remains active as fallback;
+- the first production sources are `ha-core`, `zigbee2mqtt`, `mosquitto` and
   `alloy-logforwarder`.
 
-Productierollback:
+Production rollback:
 
 ```bash
 ./scripts/rollback-production.sh --dry-run
 ./scripts/rollback-production.sh
 ```
 
-De rollback stopt de managed app en start de unmanaged fallbackcontainer. De
-appconfig wordt niet verwijderd.
+The rollback stops the managed app and starts the unmanaged fallback container.
+The app configuration is not removed.
 
-Laatst gevalideerd in de devcontainer op 2026-07-04:
+Last validated in the devcontainer on 2026-07-04:
 
 ```bash
 ./scripts/check-tools.sh
@@ -122,7 +120,7 @@ Laatst gevalideerd in de devcontainer op 2026-07-04:
 ./scripts/smoke-test.sh
 ```
 
-Laatst gevalideerd tegen Home Assistant op 2026-07-04:
+Last validated against Home Assistant on 2026-07-04:
 
 ```bash
 ./scripts/deploy.sh --dry-run
@@ -130,31 +128,32 @@ Laatst gevalideerd tegen Home Assistant op 2026-07-04:
 ./scripts/refresh-store.sh
 ```
 
-Resultaat: bestanden staan onder `/addons/alloy-logforwarder` en Home
-Assistant ziet de lokale app met slug `alloy_logforwarder`.
+Result: files are present under `/addons/alloy-logforwarder`, and Home
+Assistant sees the local app with slug `alloy_logforwarder`.
 
 ## App Skeleton
 
-| Bestand | Doel |
+| File | Purpose |
 |---|---|
-| `Dockerfile` | Bouwt op Home Assistant base image en voegt Alloy binary + `jq` toe |
-| `config.yaml` | Home Assistant app metadata, opties/schema en read-only config mount |
-| `run.sh` | Leest opties, rendert Alloy-config en start Alloy forwarding runtime |
+| `Dockerfile` | Builds on the Home Assistant base image and adds the Alloy binary plus `jq` |
+| `config.yaml` | Home Assistant app metadata, options/schema and read-only config mount |
+| `run.sh` | Reads options, renders Alloy config and starts the Alloy forwarding runtime |
 
-De huidige `run.sh` implementeert basislogforwarding op basis van
-`/data/options.json` en een dynamisch gerenderde Alloy-config. De runtime maakt
-de basisconfig en kan daarna losse `.alloy` snippets appenden voor extra HA
-apps/add-ons.
+The current `run.sh` implements basic log forwarding based on
+`/data/options.json` and a dynamically rendered Alloy config. The runtime
+creates the base config and can then append separate `.alloy` snippets for
+additional HA apps/add-ons.
 
-Voor Home Assistant Core logs is de voorkeursroute de Supervisor API collector.
-De oude losse `source_path` en labelopties blijven als fallback bestaan voor
-echte bestanden. Voor HAOS/Supervised apps en add-ons is de voorkeursroute
-`supervisor_log_sources`: de collector haalt logs op via de Supervisor API en
-de gekozen `.alloy` snippet bepaalt parsing, filtering en mapping.
+For Home Assistant Core logs, the preferred route is the Supervisor API
+collector. The old standalone `source_path` and label options remain as a
+fallback for real files. For HAOS/Supervised apps and add-ons, the preferred
+route is `supervisor_log_sources`: the collector fetches logs through the
+Supervisor API, and the selected `.alloy` snippet controls parsing, filtering
+and mapping.
 
-Standaardwaarden:
+Default values:
 
-| Optie | Standaard |
+| Option | Default |
 |---|---|
 | `loki_url` | `http://192.168.64.50:3310/loki/api/v1/push` |
 | `source_path` | `/config/home-assistant.log` |
@@ -168,19 +167,19 @@ Standaardwaarden:
 | `supervisor_core_logs_enabled` | `false` |
 | `supervisor_core_logs_path` | `/tmp/alloy-logforwarder/homeassistant-core.log` |
 | `supervisor_core_logs_poll_interval` | `30` |
-| `supervisor_log_sources` | lijst met standaard uitgeschakelde Supervisor-bronnen |
+| `supervisor_log_sources` | list of default disabled Supervisor sources |
 | `custom_alloy_config_glob` | `/config/alloy-logforwarder/*.alloy` |
 
-Wanneer `supervisor_core_logs_enabled=true` leest de app periodiek
-`/core/logs` via de Supervisor API en schrijft unieke regels naar de tijdelijke
-spool-file uit `supervisor_core_logs_path`. Alloy leest die spool-file en pusht
-de regels naar Loki. De token wordt gelezen uit `SUPERVISOR_TOKEN` of
-`HASSIO_TOKEN`, inclusief de s6 container environment file-route die Home
-Assistant base images gebruiken.
+When `supervisor_core_logs_enabled=true`, the app periodically reads
+`/core/logs` through the Supervisor API and writes unique lines to the temporary
+spool file from `supervisor_core_logs_path`. Alloy tails that spool file and
+pushes the lines to Loki. The token is read from `SUPERVISOR_TOKEN` or
+`HASSIO_TOKEN`, including the s6 container environment file route used by Home
+Assistant base images.
 
-Nieuwe configuraties gebruiken bij voorkeur `supervisor_log_sources`. Daarmee
-kan dezelfde collector meerdere Supervisor-logbronnen ophalen en per bron een
-eigen Alloy snippet gebruiken:
+New configurations should preferably use `supervisor_log_sources`. This allows
+the same collector to fetch multiple Supervisor log sources and use a dedicated
+Alloy snippet per source:
 
 ```yaml
 supervisor_log_sources:
@@ -207,26 +206,26 @@ supervisor_log_sources:
     stream: events
 ```
 
-De collector bepaalt hiermee waar logs vandaan komen. De snippet bepaalt hoe
-die app wordt geparsed, gefilterd en gemapt naar labels/payloadvelden.
+The collector defines where logs come from. The snippet defines how that app is
+parsed, filtered and mapped to labels/payload fields.
 
-Standaard worden geen app-specifieke snippets automatisch geactiveerd.
-Home Assistant core, Zigbee2MQTT en Mosquitto worden als standaard-snippets
-meegeleverd in de image. Ze worden pas actief wanneer je de bijbehorende
-bron in `supervisor_log_sources` op `enabled: true` zet. Dat is de aanbevolen
-route voor HAOS/Supervised, omdat de collector de logs via de Supervisor API
-ophaalt en de snippet daarna per app de parsing en mapping bepaalt.
+App-specific snippets are not enabled automatically by default. Home Assistant
+Core, Zigbee2MQTT and Mosquitto are shipped as standard snippets in the image.
+They only become active when the matching source in `supervisor_log_sources` is
+set to `enabled: true`. That is the recommended route for HAOS/Supervised,
+because the collector fetches logs through the Supervisor API and the snippet
+then controls parsing and mapping per app.
 
-De Home Assistant core snippet en de meegeleverde Zigbee2MQTT- en
-Mosquitto-voorbeelden zijn ports van de unmanaged MON-03 pipelines. Ze bevatten
-ruisfilters waar van toepassing, severity-normalisatie, app-specifieke
-veldextractie en `stage.pack` voor payloadvelden. De snippets gebruiken
-placeholders zoals `__SOURCE_PATH__`, `__HOST_LABEL__` en
-`__SOURCE_TYPE_LABEL__`; `run.sh` vult die in per `supervisor_log_sources`
-item. Dockervelden zoals `container_id` en `image` zijn in deze Supervisor/API
-route niet automatisch beschikbaar.
+The Home Assistant Core snippet and the included Zigbee2MQTT and Mosquitto
+examples are ports of the unmanaged MON-03 pipelines. They include noise
+filters where applicable, severity normalization, app-specific field extraction
+and `stage.pack` for payload fields. The snippets use placeholders such as
+`__SOURCE_PATH__`, `__HOST_LABEL__` and `__SOURCE_TYPE_LABEL__`; `run.sh`
+fills those per `supervisor_log_sources` item. Docker fields such as
+`container_id` and `image` are not automatically available through this
+Supervisor/API route.
 
-Voor Zigbee2MQTT en Mosquitto gebruik je dezelfde route:
+Use the same route for Zigbee2MQTT and Mosquitto:
 
 ```yaml
 supervisor_log_sources:
@@ -243,14 +242,14 @@ supervisor_log_sources:
     poll_interval: 30
 ```
 
-Een extra, nog onbekende HA app configureer je door zelf een `.alloy` bestand
-te plaatsen dat matcht met `custom_alloy_config_glob`, bijvoorbeeld:
+Configure an additional, still unknown HA app by placing your own `.alloy` file
+that matches `custom_alloy_config_glob`, for example:
 
 ```text
 /config/alloy-logforwarder/custom-app.alloy
 ```
 
-Voorbeeld van zo'n snippet:
+Example snippet:
 
 ```alloy
 loki.source.file "custom_app" {
@@ -278,18 +277,18 @@ loki.process "custom_app" {
 }
 ```
 
-Custom snippets moeten zelf naar `loki.write.default.receiver` forwarden. Die
-writer wordt door de app gegenereerd.
+Custom snippets must forward to `loki.write.default.receiver` themselves. That
+writer is generated by the app.
 
-Home Assistant toont in de logpagina meer bronnen dan alleen Core en add-ons,
-bijvoorbeeld Supervisor, Host, DNS, Audio en Multicast. Ook die bronnen kunnen
-via `supervisor_log_sources` worden geconfigureerd. Voor de ingebouwde bronnen
-leidt `run.sh` de juiste Supervisor API-route af uit `slug`; het `endpoint`
-veld in de defaults documenteert de gebruikte route.
+Home Assistant shows more sources in the log page than just Core and add-ons,
+for example Supervisor, Host, DNS, Audio and Multicast. Those sources can also
+be configured through `supervisor_log_sources`. For built-in sources, `run.sh`
+derives the correct Supervisor API route from `slug`; the `endpoint` field in
+the defaults documents the route being used.
 
-Meegeleverde maar standaard uitgeschakelde bronnen:
+Included but disabled-by-default sources:
 
-| Logpagina-bron | `endpoint` | `service`/`app`/`source_type` |
+| Log page source | `endpoint` | `service`/`app`/`source_type` |
 |---|---|---|
 | Home Assistant Core | `core/logs` | `homeassistant` / `homeassistant` / `ha-core` |
 | Supervisor | `supervisor/logs` | `supervisor` / `supervisor` / `supervisor` |
@@ -302,18 +301,17 @@ Meegeleverde maar standaard uitgeschakelde bronnen:
 | Mosquitto | `addons/core_mosquitto/logs` | `mosquitto` / `mosquitto` / `mosquitto` |
 | Zigbee2MQTT | `addons/45df7312_zigbee2mqtt/logs` | `zigbee2mqtt` / `zigbee2mqtt` / `zigbee2mqtt` |
 
-De systeembronnen gebruiken de generieke snippet
-`/etc/alloy-logforwarder/snippets/supervisor-generic.alloy`. Die houdt dezelfde
-Grafana-labelconventie aan als de app-specifieke snippets:
-`host`, `site`, `service`, `app`, `source_type`, `environment`, `stream` en
-`severity`.
+The system sources use the generic snippet
+`/etc/alloy-logforwarder/snippets/supervisor-generic.alloy`. It follows the
+same Grafana label convention as the app-specific snippets: `host`, `site`,
+`service`, `app`, `source_type`, `environment`, `stream` and `severity`.
 
-Voor onbekende add-ons blijft de standaardroute
-`addons/<slug>/logs`. Voor onbekende niet-add-on Supervisor endpoints moet de
-runtime eerst expliciet worden uitgebreid of moet het `endpoint` veld in de
-Home Assistant opties betrouwbaar worden gevalideerd.
+For unknown add-ons, the default route remains `addons/<slug>/logs`. For
+unknown non-add-on Supervisor endpoints, the runtime must first be explicitly
+extended or the `endpoint` field in Home Assistant options must be validated
+reliably.
 
-Voor toegang tot Home Assistant config en add-on configuraties gebruikt de app:
+For access to Home Assistant config and add-on configs, the app uses:
 
 ```yaml
 map:
@@ -327,9 +325,9 @@ map:
 
 ## App Metadata
 
-De verplichte Home Assistant app metadata staat in `config.yaml`.
+The required Home Assistant app metadata is stored in `config.yaml`.
 
-| Veld | Waarde |
+| Field | Value |
 |---|---|
 | `name` | `Alloy Logforwarder` |
 | `version` | `0.1.0` |
@@ -337,13 +335,13 @@ De verplichte Home Assistant app metadata staat in `config.yaml`.
 | `description` | `Forward Home Assistant logs to the central Loki/Alloy logging stack.` |
 | `arch` | `aarch64`, `amd64` |
 
-Validatiestatus:
+Validation status:
 
-| Controle | Resultaat |
+| Check | Result |
 |---|---|
-| Verplichte metadata | `name`, `version`, `slug`, `description` en `arch` aanwezig |
-| YAML lint | Geslaagd |
-| ShellCheck | Geslaagd |
-| Docker build | Geslaagd voor `alloy-logforwarder:dev` |
-| Smoke test | Geslaagd; container start en schrijft startup-log |
-| Lokale app store zichtbaarheid | Geslaagd; slug `alloy_logforwarder` zichtbaar na store reload |
+| Required metadata | `name`, `version`, `slug`, `description` and `arch` are present |
+| YAML lint | Passed |
+| ShellCheck | Passed |
+| Docker build | Passed for `alloy-logforwarder:dev` |
+| Smoke test | Passed; container starts and writes startup log |
+| Local app store visibility | Passed; slug `alloy_logforwarder` is visible after store reload |
