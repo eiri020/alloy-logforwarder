@@ -55,7 +55,7 @@ Local requirements:
 | VS Code with Dev Containers extension | Open the app repository in a container |
 | Docker Desktop or Docker Engine | Run devcontainers and app builds |
 | Git | Source control |
-| SSH to `root@192.168.64.10` | Deploy to `/addons/alloy-logforwarder` and refresh the store |
+| SSH to the target Home Assistant OS host | Deploy to `/addons/alloy-logforwarder` and refresh the store |
 
 The devcontainer installs the base tooling for Home Assistant app development:
 
@@ -93,14 +93,20 @@ Build, smoke test and deploy require the minimal app skeleton (`Dockerfile`,
 `config.yaml`, `run.sh`). Until that skeleton exists, these scripts intentionally
 return a clear error.
 
-The default deploy target uses the Home Assistant IP address:
+Deploy and store refresh do not have a built-in Home Assistant target. Set the
+target explicitly for your environment:
 
-```text
-root@192.168.64.10:/addons/alloy-logforwarder/
+```bash
+export HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/
+export HA_SSH_TARGET=root@homeassistant.local
+
+./scripts/deploy.sh --dry-run
+./scripts/deploy.sh
+./scripts/refresh-store.sh
 ```
 
-Use `HA_DEPLOY_TARGET` to override this temporarily. Use `HA_SSH_TARGET` to
-temporarily override the SSH host used for store refresh.
+`HA_DEPLOY_TARGET` must include the remote path. `HA_SSH_TARGET` is only the
+SSH host used by Home Assistant CLI commands such as store refresh.
 
 Production status:
 
@@ -112,12 +118,17 @@ Production status:
 Production rollback:
 
 ```bash
+export HA_SSH_TARGET=root@homeassistant.local
+export HA_APP_SLUG=local_alloy_logforwarder
+export HA_UNMANAGED_ALLOY_CONTAINER=mon-03-05-ha-alloy
+
 ./scripts/rollback-production.sh --dry-run
 ./scripts/rollback-production.sh
 ```
 
 The rollback stops the managed app and starts the unmanaged fallback container.
-The app configuration is not removed.
+The app configuration is not removed. This script is intended for environments
+that still have an unmanaged Alloy fallback container.
 
 Last validated in the devcontainer on 2026-07-04:
 
@@ -132,6 +143,9 @@ Last validated in the devcontainer on 2026-07-04:
 Last validated against Home Assistant on 2026-07-04:
 
 ```bash
+export HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/
+export HA_SSH_TARGET=root@homeassistant.local
+
 ./scripts/deploy.sh --dry-run
 ./scripts/deploy.sh
 ./scripts/refresh-store.sh

@@ -3,8 +3,14 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-target="${HA_DEPLOY_TARGET:-root@192.168.64.10:/addons/alloy-logforwarder/}"
+target="${HA_DEPLOY_TARGET:-}"
 mode="${1:-}"
+
+if [ -z "$target" ]; then
+  echo "HA_DEPLOY_TARGET is required." >&2
+  echo "Example: HA_DEPLOY_TARGET=root@homeassistant.local:/addons/alloy-logforwarder/ $0 --dry-run" >&2
+  exit 2
+fi
 
 rsync_args=(
   --archive

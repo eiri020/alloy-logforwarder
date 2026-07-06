@@ -3,7 +3,13 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-ha_ssh_target="${HA_SSH_TARGET:-root@192.168.64.10}"
+ha_ssh_target="${HA_SSH_TARGET:-}"
+
+if [ -z "$ha_ssh_target" ]; then
+  echo "HA_SSH_TARGET is required." >&2
+  echo "Example: HA_SSH_TARGET=root@homeassistant.local $0" >&2
+  exit 2
+fi
 
 slug="$(
   python3 - <<'PY'

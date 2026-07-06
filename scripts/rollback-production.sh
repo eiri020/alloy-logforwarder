@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ha_ssh_target="${HA_SSH_TARGET:-root@192.168.64.10}"
+ha_ssh_target="${HA_SSH_TARGET:-}"
 app_slug="${HA_APP_SLUG:-local_alloy_logforwarder}"
 unmanaged_container="${HA_UNMANAGED_ALLOY_CONTAINER:-mon-03-05-ha-alloy}"
 mode="${1:-}"
+
+if [ -z "$ha_ssh_target" ]; then
+  echo "HA_SSH_TARGET is required." >&2
+  echo "Example: HA_SSH_TARGET=root@homeassistant.local $0 --dry-run" >&2
+  exit 2
+fi
 
 commands=(
   "ha apps stop ${app_slug} || true"
